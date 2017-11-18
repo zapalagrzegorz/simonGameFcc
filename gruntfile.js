@@ -143,7 +143,7 @@ module.exports = function (grunt) {
                     dest: 'build/img/'
                 }]
             }
-        }
+        },
 });
 
 // Default task(s).

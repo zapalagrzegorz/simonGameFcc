@@ -1,3 +1,18 @@
 * {
     box-sizing: border-box;
 }
+
+.board {
+    max-width: 500px;
+    position: relative;
+}
+#button-power {
+    width: 10px;
+    height: 10px;
+}
+
+.btn-sound {
+    width: 60px;
+    height: 60px;
+    fill-opacity: 0.5;
+}
