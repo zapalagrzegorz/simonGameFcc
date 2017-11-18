@@ -1,18 +1,60 @@
 * {
     box-sizing: border-box;
 }
-
+button {
+    border: none;
+    background-color: initial;
+}
 .board {
     max-width: 500px;
     position: relative;
+    margin: auto;
 }
 #button-power {
     width: 10px;
     height: 10px;
 }
 
+.btn {
+    position: absolute;
+}
 .btn-sound {
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     fill-opacity: 0.5;
+}
+#btn-earth {
+    left: calc(50% - 50px);
+    svg {
+        fill: #795548;
+    }
+}
+#btn-fire {
+
+    left: calc(50% + 100px);
+    top: 150px;
+    svg {
+        fill: #F44336;
+    }
+}
+#btn-water {
+    left: calc(50% - 200px);
+    top: 150px;  
+    svg{
+        fill: #03A9F4;  
+    }
+}
+#btn-wind {
+    left: calc(50% - 50px);
+    top: 250px;
+    svg{
+        fill: #607D8B;
+    }
+}
+#btn-power {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: calc(50% - 5px);
+    top: 170px;
 }
