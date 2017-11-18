@@ -1,2 +1,2 @@
-# simonGameFcc
-Simon game FCC challenge
+# boilerplate
+A startup scheme for a new project
