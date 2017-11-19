@@ -10,10 +10,6 @@ button {
     position: relative;
     margin: auto;
 }
-#button-power {
-    width: 10px;
-    height: 10px;
-}
 
 .btn {
     position: absolute;
@@ -30,7 +26,6 @@ button {
     }
 }
 #btn-fire {
-
     left: calc(50% + 100px);
     top: 150px;
     svg {
@@ -40,7 +35,7 @@ button {
 #btn-water {
     left: calc(50% - 200px);
     top: 150px;  
-    svg{
+    svg {
         fill: #03A9F4;  
     }
 }
@@ -52,9 +47,24 @@ button {
     }
 }
 #btn-power {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     position: absolute;
-    left: calc(50% - 5px);
-    top: 170px;
+    left: calc(50% - 9px);
+    top: 160px;
+    svg.active {
+        fill: #4CAF50
+    }
+}
+
+#btn-strict {
+    left: calc(50% + 25px);
+    top: 215px;
+    font-size: 1.5rem;
+}
+#score {
+    position: absolute;
+    left: calc(50% + 2px);
+    top: 215px;
+    font-size: 1.5rem;
 }
