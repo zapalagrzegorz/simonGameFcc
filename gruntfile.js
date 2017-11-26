@@ -13,7 +13,7 @@ module.exports = function (grunt) {
         watch: {
             scripts: {
                 files: ['dev/js/*.js', 'test/*.js'],
-                tasks: ['concat:dev', 'babel:dev']
+                tasks: ['js']
             },
             sass: {
                 files: ['dev/css/*.scss'],
@@ -43,12 +43,6 @@ module.exports = function (grunt) {
                 }
             }
         },
-        browserify: {
-            dist: {
-                src: 'dev/js/main.js',
-                dest: 'dev/js/bundled.js',
-            }
-        },
         clean: {
             build: ['build/**/*'],
             dev_temp: ['dev/temp/']
@@ -67,6 +61,12 @@ module.exports = function (grunt) {
                 }
             }
         },
+        browserify: {
+            dist: {
+                src: 'dev/temp/scripts.js',
+                dest: 'dev/temp/bundled.js',
+            }
+        },
         babel: {
             dist: {
                 options: {
@@ -74,7 +74,7 @@ module.exports = function (grunt) {
                     presets: ['env']
                 },
                 files: {
-                    'dev/temp/scriptsEs5.js': 'dev/temp/scripts.js'
+                    'dev/temp/scriptsEs5.js': 'dev/temp/bundled.js'
                 }
             },
             dev: {
@@ -83,7 +83,7 @@ module.exports = function (grunt) {
                     presets: ['env']
                 },
                 files: {
-                    'build/js/scriptsEs5.js': 'dev/temp/scripts.js'
+                    'build/js/scriptsEs5.js': 'dev/temp/bundled.js'
                 }
             }
         },
@@ -154,6 +154,7 @@ module.exports = function (grunt) {
 
 // Default task(s).
 grunt.registerTask('default', ['clean', 'sass:dev', 'concat:dev', 'browserify', 'babel:dev', 'imagemin', 'browserSync', 'watch']);
-grunt.registerTask('dist', ['clean', 'imagemin', 'sass:dist', 'postcss', 'browserify', 'concat:dist', 'babel:dist', 'uglify'])
+grunt.registerTask('dist', ['clean', 'imagemin', 'sass:dist', 'postcss', 'browserify', 'concat:dist', 'babel:dist', 'uglify']);
+grunt.registerTask('js', ['browserify', 'babel:dev']);
 
 };
