@@ -4,7 +4,8 @@
   "description": "tic tac toe - free code camp challenge",
   "main": "index.html",
   "dependencies": {
-    "bootstrap": "^4.0.0-beta"
+    "bootstrap": "^4.0.0-beta",
+    "howler": "^2.0.5"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -17,6 +18,7 @@
     "grunt": "^1.0.0",
     "grunt-babel": "^6.0.0",
     "grunt-browser-sync": "^2.2.0",
+    "grunt-browserify": "^5.2.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-cssmin": "^2.2.1",

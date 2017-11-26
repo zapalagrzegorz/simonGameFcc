@@ -43,6 +43,12 @@ module.exports = function (grunt) {
                 }
             }
         },
+        browserify: {
+            dist: {
+                src: 'dev/js/main.js',
+                dest: 'dev/js/bundled.js',
+            }
+        },
         clean: {
             build: ['build/**/*'],
             dev_temp: ['dev/temp/']
@@ -147,7 +153,7 @@ module.exports = function (grunt) {
 });
 
 // Default task(s).
-grunt.registerTask('default', ['clean', 'sass:dev', 'concat:dev', 'babel:dev', 'imagemin', 'browserSync', 'watch']);
-grunt.registerTask('dist', ['clean', 'imagemin', 'sass:dist', 'postcss', 'concat:dist', 'babel:dist', 'uglify'])
+grunt.registerTask('default', ['clean', 'sass:dev', 'concat:dev', 'browserify', 'babel:dev', 'imagemin', 'browserSync', 'watch']);
+grunt.registerTask('dist', ['clean', 'imagemin', 'sass:dist', 'postcss', 'browserify', 'concat:dist', 'babel:dist', 'uglify'])
 
 };

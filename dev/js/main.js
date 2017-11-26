@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
      *  inicjalizacja gry
      */
     (() => {
-        
+        var Howl = require('../../node_modules/howler/dist/howler.core.min.js');
         // selectors
         
         let btnPower = document.querySelector('#btn-power');
@@ -168,7 +168,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
 
-        // ruch gracza:
+        /**
+         * ruch gracza:
+         */ 
         function playerMove () {
             // czy wybrany odpowiada wartości z kolejki?
 
@@ -185,7 +187,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // ruch komputera, ale bez dodawania elementów
             // if()
             // wybrany ruch przekroczył liczbę dźwięków komputera, inicjatywa wraca do komputera
-            if (player.playerMovIndex+1 > computer.soundList.length) {
+            if (player.playerMovIndex+1 === 30) {
+                playEnd();
+            } else if (player.playerMovIndex+1 > computer.soundList.length) {
                 
                 // oddając inicjatywę komputerowi resetuję jego licznik
                 // może funkcja?
@@ -216,6 +220,12 @@ document.addEventListener('DOMContentLoaded', function () {
         function turnOff () {
             btnEarth.removeEventListener('click', playerMove);
             this.classList.remove('active');
+        }
+        /**
+         * Plays game over demo
+         */
+        function playEnd(){
+
         }
         
         // events
