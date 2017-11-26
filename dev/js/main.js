@@ -19,12 +19,23 @@ document.addEventListener('DOMContentLoaded', function () {
         let player = {
             movesArr : [],
             playerMovIndex : 0,
+            isTurnSucceded : false,
 
             resetMovIndex : function () {
                 this.playerMovIndex = 0;
+            },
+            turnSucceds: function(){
+                this.isTurnSucceded = true; 
+            },
+            turnFails: function() {
+                this.isTurnSucceded = false;
+            },
+            isTurnSucces: function() {
+                return this.isTurnSucceded;
             }
+            
         };
-        let computer = {
+        let computer = {    
             currentElement : 0,
             isPerforming : true,
             // jak ponumerować dźwięki np. 0, 0, 0
@@ -72,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     // ponieważ potem zwracam inicjatywę graczowi, resetują jego licznik 
                     player.resetMovIndex();
-                }, 1000);
+                }, 2000);
             },
 
             /**
@@ -86,26 +97,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     // arrow function przejmuje this z kontekstu otaczającego (poziom wyżej)
                     // this to NADAL object computer
                     // this = object computer
-
-                    // warunek brzegowy rekurencji -
-                    // jeśli kolejka dźwięków nie została wyczerpana wywołaj jeszcze raz
-
-                    // funkcja powinna wywołać wszystkie elementy po kolei i dodać jeden na końcu
-                    // TODO
-                    // gdy mamy 2 elementy w liście komputera
-                    // gracz dwa razy kliknął - to:
-                    // 2 < 2 => false
-                    // TODO dalej nie powtarza wszystkich dźwiękó
-                    if (this.soundList.length === 1) {
-                        this.performNextSound(this.currentElement);
-                        this.addSound();
-                    } else if (this.currentElement < player.playerMovIndex) {
+                    if (player.isTurnSucces()) {
+                        // TODO poprawić to na jeden if
+                        if (this.soundList.length === 1) {
+                            this.performNextSound(this.currentElement);
+                            this.addSound();
+                        } else if (this.currentElement < player.playerMovIndex) {
+                            this.performNextSound(this.currentElement);
+                            this.currentElement++;
+                            this.performAllSounds();
+                        } else {
+                            this.addSound();
+                        }
+                    } else {
+                        // TODO sprawdzić poprawność działania
                         this.performNextSound(this.currentElement);
                         this.currentElement++;
                         this.performAllSounds();
-                    } else {
-                        this.addSound();
                     }
+                    // wyjątkowa obsługa pierwszego dźwięku
+                
                 }, (2500));
             },
 
@@ -172,15 +183,19 @@ document.addEventListener('DOMContentLoaded', function () {
          * ruch gracza:
          */ 
         function playerMove () {
-            // czy wybrany odpowiada wartości z kolejki?
-
             const chosenMove = parseInt(this.dataset.value);
             const desiredMoveValue = computer.soundList[player.playerMovIndex];
             const element = this;
 
+            // prawidłowy wybór
             if (chosenMove === desiredMoveValue) {
                 player.playerMovIndex++;
                 setActiveElement.call(element);
+            } else {
+                // nieprawidłowy
+                computer.currentElement = 0;
+                computer.performAllSounds();
+
             }
             // jeśli wybrał źle odegraj od początku
             // else if()
@@ -193,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 // oddając inicjatywę komputerowi resetuję jego licznik
                 // może funkcja?
+                player.isTurnSucceded = true;
                 computer.currentElement = 0;
                 
                 computer.performAllSounds();
