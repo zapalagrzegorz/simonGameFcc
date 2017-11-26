@@ -18,36 +18,39 @@ document.addEventListener('DOMContentLoaded', function () {
         // let btnSounds = [].push(btnEarth, btnFirebtnWater, btnWind)
         let player = {
             movesArr : [],
-            playerMovIndex : 0
+            playerMovIndex : 0,
+
+            resetMovIndex : function () {
+                this.playerMovIndex = 0;
+            }
         };
         let computer = {
+            currentElement : 0,
             isPerforming : true,
             // jak ponumerować dźwięki np. 0, 0, 0
             soundList : [],
             
             /**
-             * uruchamia sekwencję komputera
+             * odgrywa wybrany dźwięk komputera
+             * @param index {Number}
              */ 
-            performSound : function () {
-                // play sounds
-                this.soundList.forEach( function (element) {
-                    let elementNum = Number.parseInt(element);
-                    switch (elementNum) {
-                    case 0:
-                        setActiveElement.call(btnEarth);
-                        break;
-                    case 1:
-                        setActiveElement.call(btnFire);
-                        break;
-                    case 2:
-                        setActiveElement.call(btnWater);
-                        break;
-                    case 3:
-                        setActiveElement.call(btnWind);
-                        break;
-
-                    }
-                });
+            performNextSound : function (index) {
+     
+                const elementNum = Number.parseInt(this.soundList[index]);
+                switch (elementNum) {
+                case 0:
+                    setActiveElement.call(btnEarth);
+                    break;
+                case 1:
+                    setActiveElement.call(btnFire);
+                    break;
+                case 2:
+                    setActiveElement.call(btnWater);
+                    break;
+                case 3:
+                    setActiveElement.call(btnWind);
+                    break;
+                }
             }, 
 
             /**
@@ -57,33 +60,53 @@ document.addEventListener('DOMContentLoaded', function () {
             generateRandom : function () {
                 return Math.floor(Math.random() * 4);
             },
-            
+
+            addSound : function () {
+                setTimeout( () => {
+                    // arrow function przejmuje this z kontekstu otaczającego (poziom wyżej)
+                    // this to NADAL object computer
+                    // this = object computer
+
+                    this.soundList.push(this.generateRandom());
+                    this.performNextSound(this.soundList.length-1);
+                    
+                    // ponieważ potem zwracam inicjatywę graczowi, resetują jego licznik 
+                    player.resetMovIndex();
+                }, 1000);
+            },
+
             /**
              * sprawdza czy gracz wygrał
              * dodaje jeden element
              * odrywa dźwięki
              * 
              */
-            perform : function () {
-                // czy liczba = 20?
-                // playEndDemo
-                
-                // this = object computer
+            performAllSounds : function () {
+                setTimeout( () => {
+                    // arrow function przejmuje this z kontekstu otaczającego (poziom wyżej)
+                    // this to NADAL object computer
+                    // this = object computer
 
-                let tempSoundListIndex = this.soundList.length;
-                // dodaj tyle, żeby było o jeden więcej niż w indexie gracza
-                while (tempSoundListIndex <= player.playerMovIndex) {
-                    tempSoundListIndex++;
-                    setTimeout( () => {
-                        // arrow function przejmuje this z kontekstu otaczającego (poziom wyżej)
-                        // this to NADAL object computer
-                        // this = object computer
+                    // warunek brzegowy rekurencji -
+                    // jeśli kolejka dźwięków nie została wyczerpana wywołaj jeszcze raz
 
-                        this.soundList.push(this.generateRandom());
-                        this.performSound();
-                    }, 1000);
-                }
-
+                    // funkcja powinna wywołać wszystkie elementy po kolei i dodać jeden na końcu
+                    // TODO
+                    // gdy mamy 2 elementy w liście komputera
+                    // gracz dwa razy kliknął - to:
+                    // 2 < 2 => false
+                    // TODO dalej nie powtarza wszystkich dźwiękó
+                    if (this.soundList.length === 1) {
+                        this.performNextSound(this.currentElement);
+                        this.addSound();
+                    } else if (this.currentElement < player.playerMovIndex) {
+                        this.performNextSound(this.currentElement);
+                        this.currentElement++;
+                        this.performAllSounds();
+                    } else {
+                        this.addSound();
+                    }
+                }, (2500));
             },
 
             /**
@@ -127,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // this.removeListener('click', init);
             this.addEventListener('click', turnOff);
 
-            computer.perform();
+            computer.addSound();
         }
 
         /** 
@@ -162,8 +185,13 @@ document.addEventListener('DOMContentLoaded', function () {
             // ruch komputera, ale bez dodawania elementów
             // if()
             // wybrany ruch przekroczył liczbę dźwięków komputera, inicjatywa wraca do komputera
-            if (player.playerMovIndex > computer.soundList.length-1) {
-                computer.perform();
+            if (player.playerMovIndex+1 > computer.soundList.length) {
+                
+                // oddając inicjatywę komputerowi resetuję jego licznik
+                // może funkcja?
+                computer.currentElement = 0;
+                
+                computer.performAllSounds();
             }
             // // sprawdź czy dany dźwięk należy do odpowiada dźwiękowi z listy (numer i wartość)
             // jeśli nie: 
