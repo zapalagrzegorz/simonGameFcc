@@ -24,13 +24,13 @@ document.addEventListener('DOMContentLoaded', function () {
             resetMovIndex : function () {
                 this.playerMovIndex = 0;
             },
-            turnSucceds: function(){
+            turnSucceds: function () {
                 this.isTurnSucceded = true; 
             },
-            turnFails: function() {
+            turnFails: function () {
                 this.isTurnSucceded = false;
             },
-            isTurnSucces: function() {
+            isTurnSucces: function () {
                 return this.isTurnSucceded;
             }
             
@@ -127,16 +127,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
             } 
         };
-        // function 
+        // const gameSounds = [];
+        // @ts-ignore
+        const soundSprite = new Howl.Howl({
+            src: ['../../sounds/soundSprite.webm'],
+            loop: false,
+            sprite: {
+                wind: [0, 1000],
+                fire: [1000, 1000],
+                water: [2000, 1000],
+                earth: [3000, 1000]
+            }
+        });
 
+        /**
+         * Obsługa aktywnego elementu
+         */
         function setActiveElement () {
 
-            this.classList.add('active');
-            let element = this;
-
+            /**
+             * Helper function to remove class
+             * @param {*} element 
+             */
             function removeActiveClass (element) {
                 element.classList.remove('active');
             }
+            
+            this.classList.add('active');
+            const oneOfFourElements = this.id.substr(4);
+            soundSprite.play(oneOfFourElements);
+            let element = this;
+
             // może dla user click źródło dźwięku wziąć z data-sound 
             // TODO sprawdzić arrow function
             console.log('THIS in set ActiveElement - OUTSIDE set timeout' + this);
@@ -180,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         /**
-         * ruch gracza:
+         * Obsługa ruchu gracza:
          */ 
         function playerMove () {
             const chosenMove = parseInt(this.dataset.value);
@@ -237,10 +258,11 @@ document.addEventListener('DOMContentLoaded', function () {
             btnEarth.removeEventListener('click', playerMove);
             this.classList.remove('active');
         }
+
         /**
          * Plays game over demo
          */
-        function playEnd(){
+        function playEnd () {
 
         }
         
