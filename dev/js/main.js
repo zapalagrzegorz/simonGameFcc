@@ -6,9 +6,30 @@ document.addEventListener('DOMContentLoaded', function () {
      *  inicjalizacja gry
      */
     (() => {
+        // sound library podpięta z browserify
         var Howl = require('../../node_modules/howler/dist/howler.core.min.js');
-        // selectors
-        
+
+        // sprite sounds consists of:
+        // fire: https://freesound.org/people/Adam_N/sounds/164661/ 
+        // air: https://freesound.org/people/Robinhood76/sounds/101432/
+        // water: https://freesound.org/people/Mafon2/sounds/371274/
+        // earth: https://freesound.org/people/pushtobreak/sounds/16793/
+        // failure: https://freesound.org/people/original_sound/sounds/372197/
+        // success: https://freesound.org/people/FunWithSound/sounds/396174/
+        // @ts-ignore
+        const soundSprite = new Howl.Howl({
+            src: ['../../sounds/soundSprite-v-1_1.webm'],
+            loop: false,
+            sprite: {
+                wind: [0, 1000],
+                fire: [1000, 1000],
+                water: [2000, 1000],
+                earth: [3000, 1000],
+                failure: [4000, 1000],
+                success: [5000, 7000]
+            }
+        });
+
         let btnPower = document.querySelector('#btn-power');
         let btnStrict = document.querySelector('#btn-strict');
         let btnEarth = document.querySelector('#btn-earth');
@@ -18,12 +39,18 @@ document.addEventListener('DOMContentLoaded', function () {
         // let btnSounds = [].push(btnEarth, btnFirebtnWater, btnWind)
         let player = {
             movesArr : [],
+            
+            // wskazuje, na którym elemencie z kolejki jest gracz
             playerMovIndex : 0,
-            isTurnSucceded : false,
 
+            isTurnSucceded : false,
+            
+            // funkcja pomocnicza do obsługi właściwości playerMovIndex
             resetMovIndex : function () {
                 this.playerMovIndex = 0;
             },
+            
+            // funkcje pomocnicze do obsługi właściwości isTurnSucceded
             turnSucceds: function () {
                 this.isTurnSucceded = true; 
             },
@@ -93,30 +120,36 @@ document.addEventListener('DOMContentLoaded', function () {
              * 
              */
             performAllSounds : function () {
+                // arrow function przejmuje this z kontekstu otaczającego (poziom wyżej)
+                // this to NADAL object computer
+                // this = object computer
                 setTimeout( () => {
-                    // arrow function przejmuje this z kontekstu otaczającego (poziom wyżej)
-                    // this to NADAL object computer
-                    // this = object computer
+
                     if (player.isTurnSucces()) {
                         // TODO poprawić to na jeden if
+                        // wyjątkowa obsługa pierwszego dźwięku
                         if (this.soundList.length === 1) {
                             this.performNextSound(this.currentElement);
                             this.addSound();
+                            
+                            // warunek brzegowy dla wywołania rekurencyjnego
+                            //  czy w kolejce komputera są jeszcze elementy
                         } else if (this.currentElement < player.playerMovIndex) {
                             this.performNextSound(this.currentElement);
                             this.currentElement++;
+
+                            // wywołuje funkcję rekurencyjne 
                             this.performAllSounds();
                         } else {
                             this.addSound();
                         }
-                    } else {
-                        // TODO sprawdzić poprawność działania
+
+                        // obsługa failure również rekurencyjnie
+                    } else if (this.currentElement <= player.playerMovIndex) {
                         this.performNextSound(this.currentElement);
                         this.currentElement++;
                         this.performAllSounds();
                     }
-                    // wyjątkowa obsługa pierwszego dźwięku
-                
                 }, (2500));
             },
 
@@ -127,18 +160,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             } 
         };
-        // const gameSounds = [];
-        // @ts-ignore
-        const soundSprite = new Howl.Howl({
-            src: ['../../sounds/soundSprite.webm'],
-            loop: false,
-            sprite: {
-                wind: [0, 1000],
-                fire: [1000, 1000],
-                water: [2000, 1000],
-                earth: [3000, 1000]
-            }
-        });
 
         /**
          * Obsługa aktywnego elementu
@@ -172,34 +193,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 1000 );
         }
 
-        function init () {
-            this.classList.add('active');
-            btnEarth.addEventListener('click', playerMove, false);
-            btnFire.addEventListener('click', playerMove, false);
-            btnWater.addEventListener('click', playerMove, false);
-            btnWind.addEventListener('click', playerMove, false);
-            // turn off
-            // this.removeListener('click', init);
-            this.addEventListener('click', turnOff);
-
-            computer.addSound();
-        }
-
-        /** 
-         * Main run game
-         */
-        // jeśli odtwarza, to może usunąć eventListener'y z buttonów
-        function gamePlay () {
-            // czy została odtworzone kolejka?
-            if (computer.isPerforming) {
-                computer.perform();
-            }
-            // --nie: dodaj jeden i odegraj dźwięki (jeśli nie jest odegranych 20)
-            // --tak: czekam na ruch gracza (dodaj event listenery)  
-            // 
-
-        }
-
         /**
          * Obsługa ruchu gracza:
          */ 
@@ -214,6 +207,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 setActiveElement.call(element);
             } else {
                 // nieprawidłowy
+
+                // wkaźnik w kolejce komputera wskazuje na zera
                 computer.currentElement = 0;
                 computer.performAllSounds();
 
@@ -266,7 +261,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
         
-        // events
+        /**
+         * Sekwancja inicjalna
+         */
+        function init () {
+            this.classList.add('active');
+            btnEarth.addEventListener('click', playerMove, false);
+            btnFire.addEventListener('click', playerMove, false);
+            btnWater.addEventListener('click', playerMove, false);
+            btnWind.addEventListener('click', playerMove, false);
+            // turn off
+            // this.removeListener('click', init);
+            this.addEventListener('click', turnOff);
+
+            computer.addSound();
+        }
         
         btnPower.addEventListener('click', init);
         // addeventListener podpina samą funkcję, bez obiektu, który posiada daną metodę, wskaźnik 'this' jest wówczas ustawiony na dany element, tu np. playerCircle. 
