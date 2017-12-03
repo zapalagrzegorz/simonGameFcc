@@ -131,7 +131,8 @@ document.addEventListener('DOMContentLoaded', function () {
         currentElement : 0,
         isPerforming : true,
         soundList : [],
-            
+        quequeSounds : [],
+
         /**
              * odgrywa wybrany dźwięk komputera
              * @param index {Number}
@@ -164,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
 
         addSound : function () {
-            setTimeout( () => {
+            let id = setTimeout( () => {
                 // arrow function przejmuje this z kontekstu otaczającego (poziom wyżej)
                 // this to NADAL object computer
                 // this = object computer
@@ -177,6 +178,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 player.resetMovIndex();
                 toggleDisabledButtons();
             }, 2000);
+
+            this.quequeSounds.push(id);
         },
 
         /**
@@ -189,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // arrow function przejmuje this z kontekstu otaczającego (poziom wyżej)
             // this to NADAL object computer
             // this = object computer
-            setTimeout( () => {
+            let id = setTimeout( () => {
 
                 if (player.isTurnSucces()) {
                     // TODO poprawić to na jeden if
@@ -219,15 +222,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     toggleDisabledButtons();
                 }
             }, (2500));
+            this.quequeSounds.push(id);
         },
         /**
              * Resets computer properties
              */
         reset : function () {
             this.currentElement =  0;
-            this.soundList = [];
+            this.soundList.length = 0;
             labelScore.textContent = '0';
-
+            this.quequeSounds.forEach( id => {
+                clearTimeout(id);
+            });
+            this.quequeSounds.length = 0;
         } 
     };
 
@@ -299,6 +306,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function turnOff () {
         computer.reset();
         player.resetMovIndex();
+
         btnPower.classList.remove('active');
         btnEarth.removeEventListener('click', playerMove);
         btnFire.removeEventListener('click', playerMove);

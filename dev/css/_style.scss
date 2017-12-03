@@ -5,8 +5,10 @@
 }
 body {
     background-color: #1e1e24;
+    font-family: 'Roboto';
 }
 button {
+    font-family: inherit;
     border: none;
     background-color: initial;
     cursor: pointer;
@@ -82,7 +84,7 @@ button {
     top: 160px;
     outline: none;
     &.active svg {
-        fill: #4CAF50
+        fill: #34A853;
     }
 }
 
@@ -90,6 +92,7 @@ button {
     left: calc(50% + 25px);
     top: 215px;
     font-size: 1.5rem;
+    color: #34A853; 
     &.active {
         color: #F44336;
     }
