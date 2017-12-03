@@ -9,6 +9,10 @@ body {
 button {
     border: none;
     background-color: initial;
+    cursor: pointer;
+    &:disabled {
+        cursor: not-allowed;
+    }
 }
 
 .board {
