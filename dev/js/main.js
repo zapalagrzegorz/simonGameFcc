@@ -2,11 +2,8 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     'use strict';
-    /**
-     *  inicjalizacja gry
-     */
-    (() => {
         // sound library podpięta z browserify
+
         var Howl = require('../../node_modules/howler/dist/howler.core.min.js');
 
         // sprite sounds consists of:
@@ -16,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // earth: https://freesound.org/people/pushtobreak/sounds/16793/
         // failure: https://freesound.org/people/original_sound/sounds/372197/
         // success: https://freesound.org/people/FunWithSound/sounds/396174/
+        // webm is only not supported by IE
         // @ts-ignore
         const soundSprite = new Howl.Howl({
             src: ['../../sounds/soundSprite-v-1_1.webm'],
@@ -31,41 +29,92 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         let btnPower = document.querySelector('#btn-power');
+        let labelScore = document.querySelector('#score');
         let btnStrict = document.querySelector('#btn-strict');
         let btnEarth = document.querySelector('#btn-earth');
         let btnFire = document.querySelector('#btn-fire');
         let btnWater = document.querySelector('#btn-water');
         let btnWind = document.querySelector('#btn-wind');
-        // let btnSounds = [].push(btnEarth, btnFirebtnWater, btnWind)
+
+        // player object
         let player = {
-            movesArr : [],
-            
+
             // wskazuje, na którym elemencie z kolejki jest gracz
             playerMovIndex : 0,
 
+            // określa stan czy gracz poprawnie wybrał element
             isTurnSucceded : false,
+
+            // state of game mode
+            _strictMode : false,
             
             // funkcja pomocnicza do obsługi właściwości playerMovIndex
             resetMovIndex : function () {
                 this.playerMovIndex = 0;
             },
-            
-            // funkcje pomocnicze do obsługi właściwości isTurnSucceded
-            turnSucceds: function () {
+
+            isStrictMode : function () {
+                return this._strictMode;
+            },
+
+            // setter for game mode
+            setStrictMode : function (){
+                this._strictMode = !this._strictMode;
+                if( this._strictMode){
+                    btnStrict.textContent = "strict";
+                    btnStrict.classList.toggle('active');
+
+                }else {
+                    btnStrict.textContent = "easy"
+                    btnStrict.classList.toggle('active');
+                }
+            },
+
+            /**
+             * Obsługa wyboru poprawnego elementu
+             * @param {HTMLElement} HTMLelement 
+             */
+            turnSucceds: function (HTMLelement) {
                 this.isTurnSucceded = true; 
+                player.playerMovIndex++;
+                setActiveElement.call(HTMLelement);
+                if (player.playerMovIndex === 20) {
+                    playEnd();
+                    
+                    //  czy gracz wybrał wszystkie elementy z dotychczasowej listy
+                } else if (player.playerMovIndex === computer.soundList.length) {
+                    player.isTurnSucceded = true;
+                    computer.currentElement = 0;     
+                    computer.performAllSounds();
+                }
             },
+            /**
+             * Obsługa wyboru niepoprawnego elementu
+             */
             turnFails: function () {
+                // TODO internal function ?
                 this.isTurnSucceded = false;
+
+                player.resetMovIndex();
+                soundSprite.play('failure');
+                computer.currentElement = 0;
+                if(this.isStrictMode()){
+                    computer.reset();
+                }
+                computer.performAllSounds();
             },
+            /**
+             * Zwraca wartość właściwości
+             */
             isTurnSucces: function () {
                 return this.isTurnSucceded;
-            }
-            
+            }        
         };
+
+        // computer object 
         let computer = {    
             currentElement : 0,
             isPerforming : true,
-            // jak ponumerować dźwięki np. 0, 0, 0
             soundList : [],
             
             /**
@@ -106,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // this = object computer
 
                     this.soundList.push(this.generateRandom());
+                    labelScore.textContent = this.soundList.length.toString();
                     this.performNextSound(this.soundList.length-1);
                     
                     // ponieważ potem zwracam inicjatywę graczowi, resetują jego licznik 
@@ -134,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             
                             // warunek brzegowy dla wywołania rekurencyjnego
                             //  czy w kolejce komputera są jeszcze elementy
-                        } else if (this.currentElement < player.playerMovIndex) {
+                        } else if (this.currentElement < this.soundList.length) {
                             this.performNextSound(this.currentElement);
                             this.currentElement++;
 
@@ -145,19 +195,19 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
 
                         // obsługa failure również rekurencyjnie
-                    } else if (this.currentElement <= player.playerMovIndex) {
+                    } else if (this.currentElement < this.soundList.length) {
                         this.performNextSound(this.currentElement);
                         this.currentElement++;
                         this.performAllSounds();
                     }
                 }, (2500));
             },
-
             /**
-             * playEndDemo
+             * Resets computer properties
              */
-            performEndDemo : function () {
-
+            reset : function () {
+                this.currentElement =  0;
+                this.soundList = [];
             } 
         };
 
@@ -200,47 +250,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const chosenMove = parseInt(this.dataset.value);
             const desiredMoveValue = computer.soundList[player.playerMovIndex];
             const element = this;
-
-            // prawidłowy wybór
-            if (chosenMove === desiredMoveValue) {
-                player.playerMovIndex++;
-                setActiveElement.call(element);
-            } else {
-                // nieprawidłowy
-
-                // wkaźnik w kolejce komputera wskazuje na zera
-                computer.currentElement = 0;
-                computer.performAllSounds();
-
-            }
-            // jeśli wybrał źle odegraj od początku
-            // else if()
-            // ruch komputera, ale bez dodawania elementów
-            // if()
-            // wybrany ruch przekroczył liczbę dźwięków komputera, inicjatywa wraca do komputera
-            if (player.playerMovIndex+1 === 30) {
-                playEnd();
-            } else if (player.playerMovIndex+1 > computer.soundList.length) {
-                
-                // oddając inicjatywę komputerowi resetuję jego licznik
-                // może funkcja?
-                player.isTurnSucceded = true;
-                computer.currentElement = 0;
-                
-                computer.performAllSounds();
-            }
-            // // sprawdź czy dany dźwięk należy do odpowiada dźwiękowi z listy (numer i wartość)
-            // jeśli nie: 
-            // (czy jest tryb strict)
-            // --tak zacznij od początku  (reset)
-            // --nie zacznij odgrywanie rundy
-            // playerMoves
-
+            
             function removeActiveClass (element) {
                 element.classList.remove('active');
             }
-            // może dla user click źródło dźwięku wziąć z data-sound 
-            // TODO sprawdzić arrow function
+            
+            // prawidłowy wybór
+            if (chosenMove === desiredMoveValue) {
+                player.turnSucceds(element);
+            } else {
+                player.turnFails();
+            }
+
+
+            // TODO funkcja na jedną linijkę?
             setTimeout( () => {
                 removeActiveClass(element);
             }, 1000 );
@@ -250,15 +273,21 @@ document.addEventListener('DOMContentLoaded', function () {
          * Simulate turning off. Disables all buttons.
          */
         function turnOff () {
+            computer.reset();
+            player.resetMovIndex();
+            btnPower.classList.remove('active');
             btnEarth.removeEventListener('click', playerMove);
-            this.classList.remove('active');
+            btnFire.removeEventListener('click', playerMove);
+            btnWater.removeEventListener('click', playerMove);
+            btnWind.removeEventListener('click', playerMove);
         }
 
         /**
          * Plays game over demo
          */
         function playEnd () {
-
+            soundSprite.play('sucess');
+            turnOff();
         }
         
         /**
@@ -270,22 +299,14 @@ document.addEventListener('DOMContentLoaded', function () {
             btnFire.addEventListener('click', playerMove, false);
             btnWater.addEventListener('click', playerMove, false);
             btnWind.addEventListener('click', playerMove, false);
-            // turn off
-            // this.removeListener('click', init);
+
+             // Metoda 'bind': pierwszym argument ustawia wskaźnik 'this' w wywołaniu metody, drugi parametr przekazuje argument dla metody 
+            btnStrict.addEventListener('click', player.setStrictMode.bind(player), false);
             this.addEventListener('click', turnOff);
 
             computer.addSound();
         }
         
         btnPower.addEventListener('click', init);
-        // addeventListener podpina samą funkcję, bez obiektu, który posiada daną metodę, wskaźnik 'this' jest wówczas ustawiony na dany element, tu np. playerCircle. 
-        // Metoda 'bind': pierwszym argument ustawia wskaźnik 'this' w wywołaniu metody, drugi parametr przekazuje argument dla metody setPlayer 
-        // game.elements.playerCircle.addEventListener('click', game.setPlayer.bind(game, 0), false);
-        // game.elements.playerCross.addEventListener('click', game.setPlayer.bind(game, 1), false);
-        // game.elements.boardFields.forEach((value) => value.addEventListener('click', game.setBoardField.bind(game, 0, 'player'), false));
-        // game.elements.finalBox__tryAgain.addEventListener('click', game.replay.bind(game), false);
-        // game.elements.modalBox.style.display = 'initial';
-        // game.elements.initTextBox.classList.toggle('visible');
 
-    })();
 });

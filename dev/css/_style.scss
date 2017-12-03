@@ -1,3 +1,5 @@
+// fonts - download selected letters ! see cssTricks
+
 * {
     box-sizing: border-box;
 }
@@ -84,6 +86,9 @@ button {
     left: calc(50% + 25px);
     top: 215px;
     font-size: 1.5rem;
+    &.active {
+        color: #F44336;
+    }
 }
 
 #score {
@@ -91,4 +96,5 @@ button {
     left: calc(50% + 2px);
     top: 215px;
     font-size: 1.5rem;
+    color: white;
 }
