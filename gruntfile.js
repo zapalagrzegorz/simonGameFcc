@@ -3,11 +3,6 @@ module.exports = function (grunt) {
     // Load the plugins tasks 
     require('load-grunt-tasks')(grunt);
 
-    // Tablica zawierająca zewnętrzne javascripty, które chcemy konkatenować do vendor.js
-    // var vendorJs = [
-    //     // 'bower_components/jquery/dist/jquery.min.js',
-    //     // 'bower_components/bootstrap/js/dist/util.js',
-    // ];
     // Project configuration.
     grunt.initConfig({
         watch: {
@@ -50,20 +45,18 @@ module.exports = function (grunt) {
         concat: {
             dev: {
                 files: {
-                    // 'build/js/vendor.js': [vendorJs],
                     'dev/temp/scripts.js': ['dev/js/*.js']
                 }
             },
             dist: {
                 files: {
-                    // 'dev/temp/vendor.js': [vendorJs],
                     'dev/temp/scripts.js': ['dev/js/*.js']
                 }
             }
         },
         browserify: {
             dist: {
-                src: 'dev/temp/scripts.js',
+                src: 'dev/js/main.js',
                 dest: 'dev/temp/bundled.js',
             }
         },
@@ -101,7 +94,6 @@ module.exports = function (grunt) {
             options: {
                 sourceMap: false,
                 includePaths: [
-                    // 'bower_components/font-awesome/scss',
                     'node_modules/bootstrap/scss'
                 ]
             },
@@ -154,7 +146,7 @@ module.exports = function (grunt) {
 
 // Default task(s).
 grunt.registerTask('default', ['clean', 'sass:dev', 'concat:dev', 'browserify', 'babel:dev', 'imagemin', 'browserSync', 'watch']);
-grunt.registerTask('dist', ['clean', 'imagemin', 'sass:dist', 'postcss', 'browserify', 'concat:dist', 'babel:dist', 'uglify']);
+grunt.registerTask('dist', ['clean', 'imagemin', 'sass:dist', 'postcss', 'browserify', 'babel:dist', 'uglify']);
 grunt.registerTask('js', ['clean:dev_temp', 'concat:dev', 'browserify', 'babel:dev']);
 
 };

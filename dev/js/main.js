@@ -249,15 +249,12 @@ document.addEventListener('DOMContentLoaded', function () {
         let element = this;
 
         // może dla user click źródło dźwięku wziąć z data-sound 
-        // TODO sprawdzić arrow function
-        console.log('THIS in set ActiveElement - OUTSIDE set timeout' + this);
         setTimeout( () => {
             // this = window
             // wywołujac arrow function - nie można przejąć this przekazanego jako argument CALL lub APPLY
             // MND:Arrow function invoked through call or apply
             // Since arrow functions do not have their own this, the methods call() or apply() can only 
             // pass in parameters. thisArg is ignored. 
-            console.log('THIS in set ActiveElement - inside set timeout' + this);
             element.classList.remove('active');
         }, 1000 );
     }
