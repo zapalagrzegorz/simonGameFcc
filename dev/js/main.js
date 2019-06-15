@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // webm is only not supported by IE
     // @ts-ignore
     const soundSprite = new Howl.Howl({
-        src: ['simonGame/sounds/soundSprite-v-1_1.webm'],
+        src: ['../audio/soundSprite.webm'],
         loop: false,
         sprite: {
             wind: [0, 1000],
