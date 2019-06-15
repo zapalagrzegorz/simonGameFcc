@@ -83,6 +83,7 @@ button {
     left: calc(50% - 9px);
     top: 160px;
     outline: none;
+    fill: grey;
     &.active svg {
         fill: #34A853;
     }
