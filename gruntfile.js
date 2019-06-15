@@ -145,7 +145,8 @@ module.exports = function (grunt) {
 });
 
 // Default task(s).
-grunt.registerTask('default', ['clean', 'sass:dev', 'concat:dev', 'browserify', 'babel:dev', 'imagemin', 'browserSync', 'watch']);
+// default is broken
+// grunt.registerTask('default', ['clean', 'sass:dev', 'concat:dev', 'browserify', 'babel:dev', 'imagemin', 'browserSync', 'watch']);
 grunt.registerTask('dist', ['clean', 'imagemin', 'sass:dist', 'postcss', 'browserify', 'babel:dist', 'uglify']);
 grunt.registerTask('js', ['clean:dev_temp', 'concat:dev', 'browserify', 'babel:dev']);
 
